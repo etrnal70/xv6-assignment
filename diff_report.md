@@ -190,3 +190,54 @@ index 0d4eaed..84bd80b 100644
 ```
 
 # Ctrl-P
+
+## proc.c
+```diff
+diff --git a/proc.c b/proc.c
+index d030537..4aade9e 100644
+--- a/proc.c
++++ b/proc.c
+@@ -149,6 +149,10 @@ allocproc(void)
+   memset(p->context, 0, sizeof *p->context);
+   p->context->eip = (uint)forkret;
+ 
++  // Initialize start_ticks variable with 
++  // ticks global variable
++  p->start_ticks = ticks;
++
+   return p;
+ }
+ 
+@@ -563,7 +567,14 @@ procdumpP2P3P4(struct proc *p, char *state_string)
+ void
+ procdumpP1(struct proc *p, char *state_string)
+ {
+-  cprintf("TODO for Project 1, delete this line and implement procdumpP1() in proc.c to print a row\n");
++  int cur_ticks = ticks - (p->start_ticks);
++  if (cur_ticks < 1000)
++    cprintf("%d\t%s\t     0.%d\t%s\t%d\t ", p->pid, p->name,cur_ticks, states[p->state], p->sz);
++  else{
++    int rem = cur_ticks % 1000;
++    cur_ticks = cur_ticks / 1000;
++    cprintf("%d\t%s\t     %d.%d\t%s\t%d\t ", p->pid, p->name, cur_ticks, rem, states[p->state], p->sz);
++  }
+   return;
+ }
+ #endif
+```
+
+## proc.h
+```diff
+diff --git a/proc.h b/proc.h
+index 0a0b4c5..c6f8522 100644
+--- a/proc.h
++++ b/proc.h
+@@ -49,6 +49,7 @@ struct proc {
+   struct file *ofile[NOFILE];  // Open files
+   struct inode *cwd;           // Current directory
+   char name[16];               // Process name (debugging)
++  uint start_ticks;            // Store initial time when allocated
+ };
+ 
+ // Process memory is laid out contiguously, low addresses first:
+```
