@@ -1,9 +1,5 @@
 # Syscall Tracing
 
-## Image
-![Syscall Tracing 1](./usertests/syscall_tracing/syscall_tracing1.png)
-![Syscall Tracing 2](./usertests/syscall_tracing/syscall_tracing2.png)
-
 ## syscall.c
 ```diff
 diff --git a/syscall.c b/syscall.c
@@ -24,9 +20,6 @@ index 9105b52..b2f5249 100644
 ```
 
 # DATE syscall
-
-## Image
-![DATE Syscall](./usertests/date_syscall/date_syscall.png)
 
 ## Makefile
 ```diff
@@ -197,9 +190,6 @@ index 0d4eaed..84bd80b 100644
 ```
 
 # Ctrl-P
-
-## Image
-![Ctrl-P](./usertests/process_information/process_information.png)
 
 ## proc.c
 ```diff
