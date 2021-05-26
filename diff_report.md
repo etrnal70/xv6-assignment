@@ -1,4 +1,21 @@
 # Project 2
+## Enable Makefile
+
+```diff
+diff --git a/Makefile b/Makefile
+index acba3d9..36d1228 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ # Set flag to correct CS333 project number: 1, 2, ...
+ # 0 == original xv6-pdx distribution functionality
+-CS333_PROJECT ?= 1
++CS333_PROJECT ?= 2
+ PRINT_SYSCALLS ?= 0
+ CS333_CFLAGS ?= -DPDX_XV6
+ ifeq ($(CS333_CFLAGS), -DPDX_XV6)
+```
+
 ## UIDs and GIDs and PPIDs
 
 ```diff
@@ -550,6 +567,108 @@ index 090de9a..6ee47b8 100644
 ```
 
 ## *time* command
+
+```diff
+diff --git a/p2-test.c b/p2-test.c
+index c614add..6f1ce25 100755
+--- a/p2-test.c
++++ b/p2-test.c
+@@ -11,7 +11,7 @@
+ #define UIDGIDPPID_TEST
+ #define CPUTIME_TEST
+ #define GETPROCS_TEST
+-// #define TIME_TEST
++#define TIME_TEST
+ 
+ 
+ #ifdef GETPROCS_TEST
+diff --git a/runoff.list b/runoff.list
+index 58bf47a..08ac749 100644
+--- a/runoff.list
++++ b/runoff.list
+@@ -93,3 +93,4 @@ p2-test.c
+ p3-test.c
+ p4-test.c
+ testsetprio.c
++time.c
+diff --git a/time.c b/time.c
+new file mode 100644
+index 0000000..3a3e006
+--- /dev/null
++++ b/time.c
+@@ -0,0 +1,71 @@
++#ifdef CS333_P2
++#include "types.h"
++#include "user.h"
++
++char*
++getFront(int len, char *init[]){
++  char *ret = init[0];
++
++  for(int i = 0; i < len; i++){
++    init[i]=init[i+1];
++  }
++
++  if(len > 1)
++    init[len] = (char*)NULL;
++
++  return ret;
++}
++
++void
++time(char *bin, int len, char *param[])
++{
++  char* newbin = getFront(len-1, param);
++
++  // Initialize current ticks
++  int init = uptime();
++
++  int pid = fork();
++  if(pid < 0){
++    printf(1, "fork failed\n");
++    exit();
++  }
++
++  if(pid == 0){
++    // Handle recursive time command
++    if (strcmp(newbin,"time") == 0){
++      time(newbin, len-1, param);
++    }else{
++      if(exec(newbin, param) < 0){
++        exit();
++      }
++    }
++  }
++
++  wait();
++
++  int final = uptime();
++
++  printf(1, "%s ran in ", newbin); 
++
++  if ((final-init) < 10){
++    printf(1, "0.00%d seconds.\n", final-init);
++  }else if ((final-init) < 100){
++    printf(1, "0.0%d seconds.\n", final-init);
++  }else if ((final-init) < 1000){
++    printf(1, "0.%d seconds.\n", final-init);
++  }else{
++    printf(1, "%d.%d seconds.\n", (final-init)/1000, (final-init)%1000);
++  }
++
++  exit();
++}
++
++int
++main(int argc, char *argv[])
++{
++  char* bin = getFront(argc, argv);
++  time(bin, argc-1, argv);
++
++  exit();
++}
++#endif // CS333_P2
+```
 
 ## Modifying the Console (procdumpP2P3P4)
 ```diff
