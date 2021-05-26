@@ -1,4 +1,4 @@
-# Assignment 1 Operating System Class
+# Assignment 2 Operating System Class
 
  - Name: Mochammad Hanif Ramadhan
  - NIM : 1313619025
