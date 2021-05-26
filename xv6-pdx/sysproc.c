@@ -6,6 +6,9 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "proc.h"
+#ifdef CS333_P2
+#include "uproc.h"
+#endif
 #ifdef PDX_XV6
 #include "pdx-kernel.h"
 #endif // PDX_XV6
@@ -111,3 +114,58 @@ sys_date(void)
   return 0;
 }
 #endif
+
+#ifdef CS333_P2
+int
+sys_getuid(void)
+{
+  return myproc()->uid;
+}
+int
+sys_getgid(void)
+{
+  return myproc()->gid;
+}
+int
+sys_getppid(void)
+{
+  // Return current PID if current PPID is 
+  // NULL for e.g. init process
+  if (myproc()->parent->pid == NULL){
+    return myproc()->pid;
+  }
+  return myproc()->parent->pid;
+}
+int
+sys_setuid(void)
+{
+  int uid;
+
+  if(argint(0, &uid) < 0 || uid < 0 || uid > 32767)
+    return -1;
+  myproc()->uid = (uint)uid;
+  return 0;
+}
+int
+sys_setgid(void)
+{
+  int gid;
+
+  if(argint(0, &gid) < 0 || gid < 0 || gid > 32767)
+    return -1;
+  myproc()->gid = (uint)gid;
+  return 0;
+}
+
+int
+sys_getprocs(void)
+{
+  int max;
+  struct uproc* up;
+
+  if (argint(0, &max) < 0 || argptr(1, (void*)&up, sizeof(struct uproc) * max) < 0)
+    return -1;
+
+  return copyProc(max, up);
+}
+#endif // CS333_P2

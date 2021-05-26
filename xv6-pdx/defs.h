@@ -4,6 +4,7 @@ struct file;
 struct inode;
 struct pipe;
 struct proc;
+struct uproc;
 struct rtcdate;
 struct spinlock;
 struct sleeplock;
@@ -124,6 +125,9 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+#ifdef CS333_P2
+int             copyProc(int, struct uproc*);
+#endif // CS333_p2
 #ifdef CS333_P3
 void            printFreeList(void);
 void            printList(int);
